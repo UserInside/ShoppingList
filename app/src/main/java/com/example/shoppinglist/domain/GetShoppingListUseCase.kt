@@ -1,8 +1,10 @@
 package com.example.shoppinglist.domain
 
+import androidx.lifecycle.LiveData
+
 class GetShoppingListUseCase(private val shoppingListRepository: ShoppingListRepository) {
 
-    fun getShoppingList(): List<ShoppingItem> {
-        return shoppingListRepository.getShoppingList()
+    fun getShoppingList(): LiveData<List<ShoppingItem>> {
+       return shoppingListRepository.getShoppingList()
     }
 }
