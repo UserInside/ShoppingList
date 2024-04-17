@@ -1,16 +1,15 @@
 package com.example.shoppinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
-
 
 class MainActivity : AppCompatActivity() {
 
-    private var count = true
     private lateinit var viewModel: MainViewModel
+    private lateinit var adapter: ShoppingListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,17 +17,28 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        viewModel.shoppingList.observe(this) {
-            Log.i("MATest", it.toString())
-            if (count == true) {
-                val item = it[0]
-                count = false
-                viewModel.changeShoppingItemIsBought(item)
+        setupRecyclerView()
 
-            }
+        viewModel.shoppingList.observe(this) {
+            adapter.shoppingList = it
 
         }
 
 
+    }
+
+    private fun setupRecyclerView() {
+        val rvShoppingList = findViewById<RecyclerView>(R.id.recycler_view)
+        with(rvShoppingList) {
+            adapter = ShoppingListAdapter()
+            recycledViewPool.setMaxRecycledViews(
+                ShoppingListAdapter.VIEW_TYPE_ENABLED,
+                ShoppingListAdapter.MAX_POOL_SIZE
+            )
+            recycledViewPool.setMaxRecycledViews(
+                ShoppingListAdapter.VIEW_TYPE_DISABLED,
+                ShoppingListAdapter.MAX_POOL_SIZE
+            )
+        }
     }
 }
