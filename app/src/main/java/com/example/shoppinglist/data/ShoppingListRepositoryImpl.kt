@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglist.domain.ShoppingItem
 import com.example.shoppinglist.domain.ShoppingListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 class ShoppingListRepositoryImpl : ShoppingListRepository {
 
@@ -14,8 +15,8 @@ class ShoppingListRepositoryImpl : ShoppingListRepository {
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 10) {
-            addShoppingItemToList(ShoppingItem("Name $i", i, true))
+        for (i in 0 until 400) {
+            addShoppingItemToList(ShoppingItem("Name $i", i, Random.nextBoolean()))
         }
     }
 
