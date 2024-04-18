@@ -19,6 +19,9 @@ class ShoppingListAdapter : RecyclerView.Adapter<ShoppingListAdapter.ShoppingLis
 
     var count = 0
 
+    var onShoppingItemLongClickListener: ((ShoppingItem) -> Unit)? = null
+    var onShoppingItemClickListener: ((ShoppingItem) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingListViewHolder {
 
         Log.d("SHOPListAdapter", "onCreateViewHolder ${++count}")
@@ -34,11 +37,17 @@ class ShoppingListAdapter : RecyclerView.Adapter<ShoppingListAdapter.ShoppingLis
     }
 
     override fun onBindViewHolder(holder: ShoppingListViewHolder, position: Int) {
+        val shoppingItem = shoppingList[position]
         holder.itemView.setOnLongClickListener {
+            onShoppingItemLongClickListener?.invoke(shoppingItem)
             true
         }
-        holder.tvName.text = shoppingList[position].name
-        holder.tvAmount.text = shoppingList[position].amount.toString()
+        holder.itemView.setOnClickListener {
+            onShoppingItemClickListener?.invoke(shoppingItem)
+        }
+
+        holder.tvName.text = shoppingItem.name
+        holder.tvAmount.text = shoppingItem.amount.toString()
     }
 
     override fun getItemCount(): Int {
