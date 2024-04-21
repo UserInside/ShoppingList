@@ -34,12 +34,12 @@ class ShoppingListRepositoryImpl : ShoppingListRepository {
     }
 
     override fun editShoppingItem(shoppingItem: ShoppingItem) {
-        val oldItem = getShoppingItemById(shoppingItem.id)
+        val oldItem = getShoppingItem(shoppingItem.id)
         deleteShoppingItem(oldItem)
         addShoppingItemToList(shoppingItem)
     }
 
-    override fun getShoppingItemById(shoppingItemId: Int): ShoppingItem {
+    override fun getShoppingItem(shoppingItemId: Int): ShoppingItem {
         return shoppingListLD.value?.find { it.id == shoppingItemId }
             ?: throw RuntimeException("Item with id $shoppingItemId not found")
     }
