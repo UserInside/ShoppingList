@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 
 interface ShoppingListRepository {
 
-    fun addShoppingItemToList(shoppingItem: ShoppingItem)
+    fun addShoppingItem(shoppingItem: ShoppingItem)
 
     fun deleteShoppingItem(shoppingItem: ShoppingItem)
 

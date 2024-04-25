@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShoppingItem
 
-class ShoppingListAdapter : ListAdapter<ShoppingItem, ShoppingListViewHolder>(ShoppingItemDiffCallback()) {
+class ShoppingListAdapter : ListAdapter<ShoppingItem, ShoppingItemViewHolder>(ShoppingItemDiffCallback()) {
 
     var onShoppingItemLongClickListener: ((ShoppingItem) -> Unit)? = null
     var onShoppingItemClickListener: ((ShoppingItem) -> Unit)? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingItemViewHolder {
         val layout = when (viewType) {
             VIEW_TYPE_DISABLED -> R.layout.shopping_item_disabled
             VIEW_TYPE_ENABLED -> R.layout.shopping_item_enabled
@@ -20,10 +20,10 @@ class ShoppingListAdapter : ListAdapter<ShoppingItem, ShoppingListViewHolder>(Sh
         val view = LayoutInflater
             .from(parent.context)
             .inflate(layout, parent, false)
-        return ShoppingListViewHolder(view)
+        return ShoppingItemViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ShoppingListViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ShoppingItemViewHolder, position: Int) {
         val shoppingItem = getItem(position)
         holder.itemView.setOnLongClickListener {
             onShoppingItemLongClickListener?.invoke(shoppingItem)

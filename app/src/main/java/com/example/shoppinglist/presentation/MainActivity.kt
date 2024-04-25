@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         setupRecyclerView()
@@ -48,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        setupLongCkickListener()
+        setupLongClickListener()
         setupClickListener()
         setupSwipeListener(rvShoppingList)
     }
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupLongCkickListener() {
+    private fun setupLongClickListener() {
         shoppingListAdapter.onShoppingItemLongClickListener = {
             viewModel.changeShoppingItemIsBought(it)
         }

@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +12,7 @@ import com.example.shoppinglist.domain.ShoppingItem
 
 class ShoppingItemViewModel : ViewModel() {
 
-    private val repository = ShoppingListRepositoryImpl()
+    private val repository = ShoppingListRepositoryImpl
 
     private val addShoppingItemUseCase = AddShoppingItemUseCase(repository)
     private val editShoppingItemUseCase = EditShoppingItemUseCase(repository)
@@ -38,15 +39,13 @@ class ShoppingItemViewModel : ViewModel() {
         val name = parseName(inputName)
         val amount = parseAmount(inputAmount)
         if (validateInput(name, amount)) {
-            val newItem = ShoppingItem(name = name, amount = amount)
+            val newItem = ShoppingItem(name = name, amount = amount, isBought = false)
             addShoppingItemUseCase.addShoppingItemToList(newItem)
             finishWork()
-        } else {
-            throw IllegalArgumentException("Wrong input")
         }
     }
 
-    fun editShoppingItem(inputName: String, inputAmount: String?) {
+    fun editShoppingItem(inputName: String?, inputAmount: String?) {
         val name = parseName(inputName)
         val amount = parseAmount(inputAmount)
         if (validateInput(name, amount)) {
@@ -87,11 +86,11 @@ class ShoppingItemViewModel : ViewModel() {
         return result
     }
 
-    private fun resetInputName() {
+    fun resetInputName() {
         _errorInputName.value = false
     }
 
-    private fun resetInputAmount() {
+    fun resetInputAmount() {
         _errorInputAmount.value = false
     }
 

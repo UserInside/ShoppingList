@@ -5,22 +5,19 @@ import com.example.shoppinglist.data.ShoppingListRepositoryImpl
 import com.example.shoppinglist.domain.DeleteShoppingItemUseCase
 import com.example.shoppinglist.domain.EditShoppingItemUseCase
 import com.example.shoppinglist.domain.GetShoppingListUseCase
-import com.example.shoppinglist.domain.OpenShoppingItemActivityUseCase
 import com.example.shoppinglist.domain.ShoppingItem
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
-    private val repository = ShoppingListRepositoryImpl()
+    private val repository = ShoppingListRepositoryImpl
 
-    private val getShoppingItemUseCase = GetShoppingListUseCase(repository)
+    private val getShoppingListUseCase = GetShoppingListUseCase(repository)
     private val deleteShoppingItemUseCase = DeleteShoppingItemUseCase(repository)
     private val editShoppingItemUseCase = EditShoppingItemUseCase(repository)
 
-    private val openShoppingItemActivityUseCase = OpenShoppingItemActivityUseCase()
+    val shoppingList = getShoppingListUseCase.getShoppingList()
 
-    val shoppingList = getShoppingItemUseCase.getShoppingList()
-
-    fun deleteShoppingItem(shoppingItem: ShoppingItem){
+    fun deleteShoppingItem(shoppingItem: ShoppingItem) {
         deleteShoppingItemUseCase.deleteShoppingItem(shoppingItem)
     }
 
@@ -28,9 +25,4 @@ class MainViewModel: ViewModel() {
         val newItem = shoppingItem.copy(isBought = !shoppingItem.isBought)
         editShoppingItemUseCase.editShoppingItem(newItem)
     }
-
-    fun openShoppingItemActivity() {
-
-    }
-
 }
