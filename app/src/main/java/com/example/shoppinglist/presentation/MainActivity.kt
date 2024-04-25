@@ -1,12 +1,12 @@
 package com.example.shoppinglist.presentation
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,13 +17,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         setupRecyclerView()
 
         viewModel.shoppingList.observe(this) {
             shoppingListAdapter.submitList(it)
+        }
+
+        val btnAddItem = findViewById<FloatingActionButton>(R.id.btn_add_shopping_item)
+        btnAddItem.setOnClickListener {
+            val intent = ShoppingItemActivity.newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -42,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        setupLongCkickListener()
+        setupLongClickListener()
         setupClickListener()
         setupSwipeListener(rvShoppingList)
     }
@@ -68,11 +73,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shoppingListAdapter.onShoppingItemClickListener = {
-            Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
+            val intent = ShoppingItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
-    private fun setupLongCkickListener() {
+    private fun setupLongClickListener() {
         shoppingListAdapter.onShoppingItemLongClickListener = {
             viewModel.changeShoppingItemIsBought(it)
         }

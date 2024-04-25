@@ -3,8 +3,8 @@ package com.example.shoppinglist.domain
 data class ShoppingItem(
     val name: String,
     val amount: Int,
-    val isBought: Boolean,
-    var id: Int = UNDEFINED_ID
+    val isBought: Boolean = false,
+    var id: Int = UNDEFINED_ID,
 ) {
 
     companion object {

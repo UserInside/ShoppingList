@@ -7,7 +7,7 @@ import com.example.shoppinglist.domain.ShoppingListRepository
 import java.lang.RuntimeException
 import kotlin.random.Random
 
-class ShoppingListRepositoryImpl : ShoppingListRepository {
+object ShoppingListRepositoryImpl : ShoppingListRepository {
 
     private val shoppingListLD = MutableLiveData<List<ShoppingItem>>()
     private val shoppingList = sortedSetOf<ShoppingItem>({o1, o2 -> o1.id.compareTo(o2.id)})
@@ -15,12 +15,12 @@ class ShoppingListRepositoryImpl : ShoppingListRepository {
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 400) {
-            addShoppingItemToList(ShoppingItem("Name $i", i, Random.nextBoolean()))
+        for (i in 0 until 10) {
+            addShoppingItem(ShoppingItem("Name $i", i, Random.nextBoolean()))
         }
     }
 
-    override fun addShoppingItemToList(shoppingItem: ShoppingItem) {
+    override fun addShoppingItem(shoppingItem: ShoppingItem) {
         if(shoppingItem.id == ShoppingItem.UNDEFINED_ID) {
             shoppingItem.id = autoIncrementId++
         }
@@ -34,13 +34,13 @@ class ShoppingListRepositoryImpl : ShoppingListRepository {
     }
 
     override fun editShoppingItem(shoppingItem: ShoppingItem) {
-        val oldItem = getShoppingItemById(shoppingItem.id)
-        deleteShoppingItem(oldItem)
-        addShoppingItemToList(shoppingItem)
+        val oldItem = getShoppingItem(shoppingItem.id)
+        shoppingList.remove(oldItem)
+        addShoppingItem(shoppingItem)
     }
 
-    override fun getShoppingItemById(shoppingItemId: Int): ShoppingItem {
-        return shoppingListLD.value?.find { it.id == shoppingItemId }
+    override fun getShoppingItem(shoppingItemId: Int): ShoppingItem {
+        return shoppingList.find { it.id == shoppingItemId }
             ?: throw RuntimeException("Item with id $shoppingItemId not found")
     }
 
@@ -48,7 +48,7 @@ class ShoppingListRepositoryImpl : ShoppingListRepository {
         return shoppingListLD
     }
 
-    fun updateList() {
+    private fun updateList() {
         shoppingListLD.value = shoppingList.toList()
     }
 }
