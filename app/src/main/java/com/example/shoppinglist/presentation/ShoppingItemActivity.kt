@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShoppingItem
 
-class ShoppingItemActivity : AppCompatActivity() {
+class ShoppingItemActivity : AppCompatActivity(), ShoppingItemFragment.OnEditingFinished {
 
     private var screenMode = MODE_UNKNOWN
     private var shoppingItemId = ShoppingItem.UNDEFINED_ID
@@ -19,6 +19,10 @@ class ShoppingItemActivity : AppCompatActivity() {
         if(savedInstanceState == null) {
             launchCorrectScreenMode()
         }
+    }
+
+    override fun onEditingFinished() {
+        finish()
     }
 
     private fun launchCorrectScreenMode() {

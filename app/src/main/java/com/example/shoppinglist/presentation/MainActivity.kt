@@ -1,6 +1,7 @@
 package com.example.shoppinglist.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -12,7 +13,7 @@ import com.example.shoppinglist.presentation.ShoppingItemFragment.Companion.newF
 import com.example.shoppinglist.presentation.ShoppingItemFragment.Companion.newFragmentEditModeInstance
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShoppingItemFragment.OnEditingFinished {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shoppingListAdapter: ShoppingListAdapter
@@ -39,6 +40,11 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(newFragmentAddModeInstance())
             }
         }
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this, "Saved successfully", Toast.LENGTH_LONG).show()
+        supportFragmentManager.popBackStack()
     }
 
     private fun launchFragment(fragment: Fragment) {

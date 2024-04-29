@@ -1,5 +1,6 @@
 package com.example.shoppinglist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout
 class ShoppingItemFragment : Fragment() {
 
     private lateinit var viewModel: ShoppingItemViewModel
+    private lateinit var onEditingFinished: OnEditingFinished
 
     private lateinit var tilName: TextInputLayout
     private lateinit var etName: EditText
@@ -26,6 +28,15 @@ class ShoppingItemFragment : Fragment() {
 
     private var screenMode: String = MODE_UNKNOWN
     private var shoppingItemId: Int = ShoppingItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinished) {
+            onEditingFinished = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinished interface")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +82,7 @@ class ShoppingItemFragment : Fragment() {
         }
 
         viewModel.isReadyToClose.observe(viewLifecycleOwner) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            onEditingFinished.onEditingFinished()
         }
     }
 
@@ -131,6 +142,10 @@ class ShoppingItemFragment : Fragment() {
         tilAmount = view.findViewById(R.id.til_amount)
         etAmount = view.findViewById(R.id.et_amount)
         btnSave = view.findViewById(R.id.btn_save)
+    }
+
+    interface OnEditingFinished{
+        fun onEditingFinished()
     }
 
     companion object {
