@@ -15,14 +15,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class ShoppingItemActivity : AppCompatActivity() {
 
-//    private lateinit var viewModel: ShoppingItemViewModel
-//
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var tilAmount: TextInputLayout
-//    private lateinit var etAmount: TextInputEditText
-//    private lateinit var btnSave: Button
-
     private var screenMode = MODE_UNKNOWN
     private var shoppingItemId = ShoppingItem.UNDEFINED_ID
 
@@ -30,11 +22,9 @@ class ShoppingItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_item)
         parseIntent()
-//        viewModel = ViewModelProvider(this)[ShoppingItemViewModel::class.java]
-//        initViews()
-//        addTextChangedListeners()
-        launchCorrectScreenMode()
-//        observeViewModel()
+        if(savedInstanceState == null) {
+            launchCorrectScreenMode()
+        }
     }
 
     private fun launchCorrectScreenMode() {
@@ -44,61 +34,10 @@ class ShoppingItemActivity : AppCompatActivity() {
             else -> throw RuntimeException("Wrong ShoppingItemActivity screen mode - $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_shopping_item_container, fragment)
+            .replace(R.id.shopping_item_fragment_container, fragment)
             .commit()
     }
-//
-//    private fun observeViewModel() {
-//        viewModel.errorInputName.observe(this) { input ->
-//            when (input) {
-//                true -> tilName.error = "Wrong name input"
-//                false -> tilName.error = null
-//            }
-//        }
-//        viewModel.errorInputAmount.observe(this) { input ->
-//            when (input) {
-//                true -> tilAmount.error = "Wrong amount input"
-//                false -> tilAmount.error = null
-//            }
-//        }
-//
-//        viewModel.isReadyToClose.observe(this) {
-//            finish()
-//        }
-//    }
-//
-//    private fun launchAddModeScreen() {
-//        btnSave.setOnClickListener {
-//            val inputName = etName.text?.toString()
-//            val inputAmount = etAmount.text?.toString()
-//            viewModel.addShoppingItem(inputName, inputAmount)
-//        }
-//    }
-//
-//    private fun launchEditModeScreen() {
-//        viewModel.getShoppingItem(shoppingItemId)
-//        viewModel.shoppingItem.observe(this) {
-//            etName.setText(it.name)
-//            etAmount.setText(it.amount.toString())
-//        }
-//
-//        btnSave.setOnClickListener {
-//            viewModel.editShoppingItem(
-//                etName.editableText?.toString(),
-//                etAmount.editableText?.toString()
-//            )
-//        }
-//    }
-//
-//    private fun addTextChangedListeners() {
-//        etName.doOnTextChanged { _, _, _, _ ->
-//            viewModel.resetInputName()
-//        }
-//        etAmount.doOnTextChanged { _, _, _, _ ->
-//            viewModel.resetInputAmount()
-//        }
-//    }
-//
+
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_LAUNCH_MODE)) throw RuntimeException("ShoppingItemActivity launch mode not found")
 
@@ -113,14 +52,6 @@ class ShoppingItemActivity : AppCompatActivity() {
         }
 
     }
-//
-//    private fun initViews() {
-//        tilName = findViewById(R.id.til_name)
-//        etName = findViewById(R.id.et_name)
-//        tilAmount = findViewById(R.id.til_amount)
-//        etAmount = findViewById(R.id.et_amount)
-//        btnSave = findViewById(R.id.btn_save)
-//    }
 
     companion object {
 
