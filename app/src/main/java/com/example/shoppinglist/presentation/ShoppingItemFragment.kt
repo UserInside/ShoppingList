@@ -1,14 +1,11 @@
 package com.example.shoppinglist.presentation
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,10 +14,7 @@ import com.example.shoppinglist.domain.ShoppingItem
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class ShoppingItemFragment(
-    private val screenMode: String = ShoppingItemActivity.MODE_UNKNOWN,
-    private val shoppingItemId: Int = ShoppingItem.UNDEFINED_ID
-) : Fragment() {
+class ShoppingItemFragment : Fragment() {
 
     private lateinit var viewModel: ShoppingItemViewModel
 
@@ -29,6 +23,14 @@ class ShoppingItemFragment(
     private lateinit var tilAmount: TextInputLayout
     private lateinit var etAmount: TextInputEditText
     private lateinit var btnSave: Button
+
+    private var screenMode: String = MODE_UNKNOWN
+    private var shoppingItemId: Int = ShoppingItem.UNDEFINED_ID
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,8 +42,6 @@ class ShoppingItemFragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        parseParams()
         viewModel = ViewModelProvider(this)[ShoppingItemViewModel::class.java]
         initViews(view)
         addTextChangedListeners()
@@ -108,8 +108,21 @@ class ShoppingItemFragment(
     }
 
     private fun parseParams() {
-        if (screenMode != MODE_ADD && screenMode != MODE_EDIT) throw RuntimeException("ShoppingItemActivity launch mode not found")
+        val args = requireArguments()
+        if (!args.containsKey(LAUNCH_MODE))
+            throw RuntimeException("Launch mode not found")
 
+        val mode = args.getString(LAUNCH_MODE)
+        if (mode != MODE_ADD && mode != MODE_EDIT)
+            throw RuntimeException("ShoppingItemActivity launch mode not found -> $mode <-")
+
+        screenMode = mode
+        if (screenMode == MODE_EDIT) {
+            if (!args.containsKey(SHOPPING_ITEM_ID)) {
+                throw RuntimeException("Shopping item not found")
+            }
+            shoppingItemId = args.getInt(SHOPPING_ITEM_ID, ShoppingItem.UNDEFINED_ID)
+        }
     }
 
     private fun initViews(view: View) {
@@ -122,33 +135,27 @@ class ShoppingItemFragment(
 
     companion object {
 
-        private const val EXTRA_LAUNCH_MODE = "extra_launch_mode"
-        private const val EXTRA_SHOPPING_ITEM_ID = "extra_shopping_item_id"
+        private const val LAUNCH_MODE = "extra_launch_mode"
+        private const val SHOPPING_ITEM_ID = "extra_shopping_item_id"
         private const val MODE_ADD = "mode_add"
         private const val MODE_EDIT = "mode_edit"
         const val MODE_UNKNOWN = ""
 
-        fun newFragmentAddModeInstance() : ShoppingItemFragment {
-            return ShoppingItemFragment(MODE_ADD)
+        fun newFragmentAddModeInstance(): ShoppingItemFragment {
+            return ShoppingItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(LAUNCH_MODE, MODE_ADD)
+                }
+            }
         }
 
-        fun newFragmentEditModeInstance(shoppingItemId: Int) : ShoppingItemFragment {
-            return ShoppingItemFragment(MODE_EDIT, shoppingItemId)
+        fun newFragmentEditModeInstance(shoppingItemId: Int): ShoppingItemFragment {
+            return ShoppingItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(LAUNCH_MODE, MODE_EDIT)
+                    putInt(SHOPPING_ITEM_ID, shoppingItemId)
+                }
+            }
         }
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShoppingItemActivity::class.java)
-            intent.putExtra(EXTRA_LAUNCH_MODE, MODE_ADD)
-            return intent
-        }
-
-        fun newIntentEditItem(context: Context, shoppingItemId: Int): Intent {
-            val intent = Intent(context, ShoppingItemActivity::class.java)
-            intent.putExtra(EXTRA_LAUNCH_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_SHOPPING_ITEM_ID, shoppingItemId)
-            return intent
-        }
-
-
     }
 }
