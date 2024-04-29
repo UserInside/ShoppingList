@@ -5,13 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainer
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
-import com.example.shoppinglist.domain.ShoppingItem
 import com.example.shoppinglist.presentation.ShoppingItemFragment.Companion.newFragmentAddModeInstance
 import com.example.shoppinglist.presentation.ShoppingItemFragment.Companion.newFragmentEditModeInstance
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -111,29 +109,5 @@ class MainActivity : AppCompatActivity() {
         shoppingListAdapter.onShoppingItemLongClickListener = {
             viewModel.changeShoppingItemIsBought(it)
         }
-    }
-
-    companion object {
-
-        private const val EXTRA_LAUNCH_MODE = "extra_launch_mode"
-        private const val EXTRA_SHOPPING_ITEM_ID = "extra_shopping_item_id"
-        private const val MODE_ADD = "mode_add"
-        private const val MODE_EDIT = "mode_edit"
-        const val MODE_UNKNOWN = ""
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShoppingItemActivity::class.java)
-            intent.putExtra(EXTRA_LAUNCH_MODE, MODE_ADD)
-            return intent
-        }
-
-        fun newIntentEditItem(context: Context, shoppingItemId: Int): Intent {
-            val intent = Intent(context, ShoppingItemActivity::class.java)
-            intent.putExtra(EXTRA_LAUNCH_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_SHOPPING_ITEM_ID, shoppingItemId)
-            return intent
-        }
-
-
     }
 }
