@@ -144,7 +144,7 @@ class ShoppingItemFragment : Fragment() {
         btnSave = view.findViewById(R.id.btn_save)
     }
 
-    interface OnEditingFinished{
+    interface OnEditingFinished {
         fun onEditingFinished()
     }
 
