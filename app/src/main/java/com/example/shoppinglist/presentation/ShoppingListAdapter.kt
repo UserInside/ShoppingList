@@ -2,11 +2,16 @@ package com.example.shoppinglist.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ShoppingItemDisabledBinding
+import com.example.shoppinglist.databinding.ShoppingItemEnabledBinding
 import com.example.shoppinglist.domain.ShoppingItem
 
-class ShoppingListAdapter : ListAdapter<ShoppingItem, ShoppingItemViewHolder>(ShoppingItemDiffCallback()) {
+class ShoppingListAdapter :
+    ListAdapter<ShoppingItem, ShoppingItemViewHolder>(ShoppingItemDiffCallback()) {
 
     var onShoppingItemLongClickListener: ((ShoppingItem) -> Unit)? = null
     var onShoppingItemClickListener: ((ShoppingItem) -> Unit)? = null
@@ -17,24 +22,37 @@ class ShoppingListAdapter : ListAdapter<ShoppingItem, ShoppingItemViewHolder>(Sh
             VIEW_TYPE_ENABLED -> R.layout.shopping_item_enabled
             else -> throw RuntimeException("Unknown view type -> $viewType")
         }
-        val view = LayoutInflater
-            .from(parent.context)
-            .inflate(layout, parent, false)
-        return ShoppingItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+
+        return ShoppingItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShoppingItemViewHolder, position: Int) {
         val shoppingItem = getItem(position)
-        holder.itemView.setOnLongClickListener {
+        val binding = holder.binding
+        binding.root.setOnLongClickListener {
             onShoppingItemLongClickListener?.invoke(shoppingItem)
             true
         }
-        holder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             onShoppingItemClickListener?.invoke(shoppingItem)
         }
 
-        holder.tvName.text = shoppingItem.name
-        holder.tvAmount.text = shoppingItem.amount.toString()
+        when(binding){
+            is ShoppingItemDisabledBinding -> {
+                binding.tvName.text = shoppingItem.name
+                binding.tvAmount.text = shoppingItem.amount.toString()
+            }
+            is ShoppingItemEnabledBinding -> {
+                binding.tvName.text = shoppingItem.name
+                binding.tvAmount.text = shoppingItem.amount.toString()
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
