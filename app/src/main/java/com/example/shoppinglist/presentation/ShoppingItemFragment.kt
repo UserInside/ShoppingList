@@ -5,26 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.FragmentShoppingItemBinding
 import com.example.shoppinglist.domain.ShoppingItem
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
 class ShoppingItemFragment : Fragment() {
 
     private lateinit var viewModel: ShoppingItemViewModel
     private lateinit var onEditingFinished: OnEditingFinished
 
-    private lateinit var tilName: TextInputLayout
-    private lateinit var etName: EditText
-    private lateinit var tilAmount: TextInputLayout
-    private lateinit var etAmount: TextInputEditText
-    private lateinit var btnSave: Button
+    private var _binding: FragmentShoppingItemBinding? = null
+    private val binding: FragmentShoppingItemBinding
+        get() = _binding ?: throw RuntimeException("FragmentShoppingItemBinding == null")
 
     private var screenMode: String = MODE_UNKNOWN
     private var shoppingItemId: Int = ShoppingItem.UNDEFINED_ID
@@ -47,14 +42,23 @@ class ShoppingItemFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_shopping_item, container, false)
+    ): View {
+        _binding = FragmentShoppingItemBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         viewModel = ViewModelProvider(this)[ShoppingItemViewModel::class.java]
-        initViews(view)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
         addTextChangedListeners()
         launchCorrectScreenMode()
         observeViewModel()
@@ -68,18 +72,6 @@ class ShoppingItemFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.errorInputName.observe(viewLifecycleOwner) { input ->
-            when (input) {
-                true -> tilName.error = "Wrong name input"
-                false -> tilName.error = null
-            }
-        }
-        viewModel.errorInputAmount.observe(viewLifecycleOwner) { input ->
-            when (input) {
-                true -> tilAmount.error = "Wrong amount input"
-                false -> tilAmount.error = null
-            }
-        }
 
         viewModel.isReadyToClose.observe(viewLifecycleOwner) {
             onEditingFinished.onEditingFinished()
@@ -87,33 +79,29 @@ class ShoppingItemFragment : Fragment() {
     }
 
     private fun launchAddModeScreen() {
-        btnSave.setOnClickListener {
-            val inputName = etName.text?.toString()
-            val inputAmount = etAmount.text?.toString()
+        binding.btnSave.setOnClickListener {
+            val inputName = binding.etName.text?.toString()
+            val inputAmount = binding.etAmount.text?.toString()
             viewModel.addShoppingItem(inputName, inputAmount)
         }
     }
 
     private fun launchEditModeScreen() {
         viewModel.getShoppingItem(shoppingItemId)
-        viewModel.shoppingItem.observe(viewLifecycleOwner) {
-            etName.setText(it.name)
-            etAmount.setText(it.amount.toString())
-        }
 
-        btnSave.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             viewModel.editShoppingItem(
-                etName.editableText?.toString(),
-                etAmount.editableText?.toString()
+                binding.etName.editableText?.toString(),
+                binding.etAmount.editableText?.toString()
             )
         }
     }
 
     private fun addTextChangedListeners() {
-        etName.doOnTextChanged { _, _, _, _ ->
+        binding.etName.doOnTextChanged { _, _, _, _ ->
             viewModel.resetInputName()
         }
-        etAmount.doOnTextChanged { _, _, _, _ ->
+        binding.etAmount.doOnTextChanged { _, _, _, _ ->
             viewModel.resetInputAmount()
         }
     }
@@ -136,12 +124,9 @@ class ShoppingItemFragment : Fragment() {
         }
     }
 
-    private fun initViews(view: View) {
-        tilName = view.findViewById(R.id.til_name)
-        etName = view.findViewById(R.id.et_name)
-        tilAmount = view.findViewById(R.id.til_amount)
-        etAmount = view.findViewById(R.id.et_amount)
-        btnSave = view.findViewById(R.id.btn_save)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     interface OnEditingFinished {
