@@ -1,16 +1,16 @@
 package com.example.shoppinglist.presentation
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shoppinglist.data.ShoppingListRepositoryImpl
 import com.example.shoppinglist.domain.AddShoppingItemUseCase
 import com.example.shoppinglist.domain.EditShoppingItemUseCase
 import com.example.shoppinglist.domain.GetShoppingItemUseCase
 import com.example.shoppinglist.domain.ShoppingItem
+import kotlinx.coroutines.launch
 
 class ShoppingItemViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -42,8 +42,10 @@ class ShoppingItemViewModel(application: Application) : AndroidViewModel(applica
         val amount = parseAmount(inputAmount)
         if (validateInput(name, amount)) {
             val newItem = ShoppingItem(name = name, amount = amount, isBought = false)
-            addShoppingItemUseCase.addShoppingItemToList(newItem)
-            finishWork()
+            viewModelScope.launch {
+                addShoppingItemUseCase.addShoppingItemToList(newItem)
+                finishWork()
+            }
         }
     }
 
@@ -53,14 +55,18 @@ class ShoppingItemViewModel(application: Application) : AndroidViewModel(applica
         if (validateInput(name, amount)) {
             _shoppingItem.value?.let {
                 val item = it.copy(name = name, amount = amount)
-                editShoppingItemUseCase.editShoppingItem(item)
-                finishWork()
+                viewModelScope.launch {
+                    editShoppingItemUseCase.editShoppingItem(item)
+                    finishWork()
+                }
             }
         }
     }
 
     fun getShoppingItem(id: Int) {
-        _shoppingItem.value = getShoppingItemUseCase.getShoppingItem(id)
+        viewModelScope.launch {
+            _shoppingItem.postValue(getShoppingItemUseCase.getShoppingItem(id))
+        }
     }
 
     private fun parseName(inputName: String?): String {
@@ -97,6 +103,7 @@ class ShoppingItemViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun finishWork() {
-        _isReadyToClose.value = Unit
+        _isReadyToClose.postValue(Unit)
     }
+
 }
